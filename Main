@@ -1,0 +1,64 @@
+
+import numpy as np
+from Particle3D import Particle3D
+import math
+import sys
+
+p1 = Particle3D(np.array[float(4.5), float(0.0), float(0.0)],0,1,"Particle1")
+p2 = Particle3D(np.array[float(-4.5), float(0.0), float(0.0)],0,1,"Particle2")
+
+#Force Calculatuion
+"""
+This calculates the force. The vector "p.separation" is the separation vector and the scalar "r" is the magnitude of s. The output of this function is a force vector.
+"r" and "p.separation" need to be updated accordingly to the methods from the particle 3D file.
+"""
+
+def force(r,s):
+    if r>=3.0:
+        force = 0.0
+    else:
+        force = ((48/(r**14))-(24/(r**8)))*s
+    return force
+
+"""
+Must calculate position, then boundary conditions, then other variables
+"""
+#Boundary Conditions
+def boundary(p):
+    for i in range(2):
+        pos = p.position[i]
+        if pos>5.0:
+            p.position[i] = pos - 10.0
+        elif pos<5.0:
+            p.position[i] = pos + 10.0
+        return p.position
+
+#Updates, Force and Velocity of Particle
+def update(p,f,dt,r,s,t):
+        p.position = p.leapPos(dt,f)
+        p.position = boundary(p.position)
+        force_new = force(r,s)
+        p.velocity = p.leapvel(dt, 0.5*(f+force_new))
+        f = force_new
+        t = t + dt
+        return t, f, p.position, p.velocity
+    
+    
+
+#Method 1
+s1 = Particle3D.separation(p1,p2)
+r1 = np.linalg.norm(s)
+f1 = force(r1,s1)
+
+
+
+#Method 2
+f2 = -f1
+
+#Brandon's Shit
+distance = p1x -p2x
+
+if distance > 5:
+    f1 = force(r1,s1)
+    
+    
