@@ -4,8 +4,8 @@ from Particle3D import Particle3D
 import math
 import sys
 
-p1 = Particle3D(np.array[float(4.5), float(0.0), float(0.0)],0,1,"Particle1")
-p2 = Particle3D(np.array[float(-4.5), float(0.0), float(0.0)],0,1,"Particle2")
+p1 = Particle3D(np.array([float(7), float(0.0), float(0.0)]),0,1,1)
+p2 = Particle3D(np.array([float(-4.5), float(0.0), float(0.0)]),0,1,2)
 
 #Force Calculatuion
 """
@@ -29,7 +29,7 @@ def boundary(p):
         pos = p.position[i]
         if pos>5.0:
             p.position[i] = pos - 10.0
-        elif pos<5.0:
+        elif pos<-5.0:
             p.position[i] = pos + 10.0
         return p.position
 
@@ -43,22 +43,15 @@ def update(p,f,dt,r,s,t):
         t = t + dt
         return t, f, p.position, p.velocity
     
-    
+
 
 #Method 1
 s1 = Particle3D.separation(p1,p2)
-r1 = np.linalg.norm(s)
+r1 = np.linalg.norm(s1)
 f1 = force(r1,s1)
 
 
 
 #Method 2
 f2 = -f1
-
-#Brandon's Shit
-distance = p1x -p2x
-
-if distance > 5:
-    f1 = force(r1,s1)
-    
     
