@@ -7,7 +7,7 @@ class Particle3D(object):
         self.position = pos
         self.velocity = vel
         self.mass = mass
-	    self.label = label
+        self.label = label
 
     # Formatted output as String
     def __str__(self):
@@ -24,18 +24,18 @@ class Particle3D(object):
     # Static Method returning relative vector separation of two particles
     @staticmethod
     def separation(p1,p2):
-        separation = np.array[0,0,0]
+        separation = np.array([0.0,0.0,0.0])
         for i in range(2):
             distance = p1.position[i] - p2.position[i]
             if distance>5.0:
                 pos1 = p1.position[i]
                 pos1 = pos1 - 10.0
                 separation[i] = p2.position[i]-pos1
-            elif distance<5.0:
+            elif distance<-5.0:
                 pos1 = p1.position[i]
                 pos1 = pos1 + 10.0
                 separation[i] = p2.position[i]-pos1
             else:
-                separation[i] = p1.position[i]-p2.position[i]
+                separation[i] = distance
         return separation
     
