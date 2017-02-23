@@ -7,7 +7,7 @@ import sys
 p1 = Particle3D(np.array([float(7), float(0.0), float(0.0)]),0,1,1)
 p2 = Particle3D(np.array([float(-4.5), float(0.0), float(0.0)]),0,1,2)
 
-#Force Calculatuion
+#Force Calculation
 """
 This calculates the force. The vector "p.separation" is the separation vector and the scalar "r" is the magnitude of s. The output of this function is a force vector.
 "r" and "p.separation" need to be updated accordingly to the methods from the particle 3D file.
