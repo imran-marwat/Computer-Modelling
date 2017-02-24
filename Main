@@ -5,21 +5,27 @@ from Particle3D import Particle3D
 import math
 import sys
 
-p1 = Particle3D(np.array([float(8.0), float(0.0), float(2.0)]),0,1,1)
-p2 = Particle3D(np.array([float(-3.0), float(0.0), float(1.7)]),0,1,2)
-p3 = Particle3D(np.array([float(-3.0), float(1.0), float(-6.2)]),0,1,3)
+p1 = Particle3D(np.array([float(8.0), float(2.0), float(0.0)]),0,1,1)
+p2 = Particle3D(np.array([float(-3.0), float(7.0), float(0.0)]),0,1,2)
+p3 = Particle3D(np.array([float(4.0), float(3.0), float(0.0)]),0,1,3)
+p4 = Particle3D(np.array([float(-1.0), float(-1.0), float(0.0)]),0,1,3)
+p5 = Particle3D(np.array([float(5.0), float(3.0), float(0.0)]),0,1,1)
+p6 = Particle3D(np.array([float(-4.0), float(2.0), float(0.0)]),0,1,2)
+p7 = Particle3D(np.array([float(2.0), float(2.5), float(-0.0)]),0,1,3)
+p8 = Particle3D(np.array([float(-2.0), float(1.0), float(0.0)]),0,1,"Hello")
 t = 0.0
 dt = 0.01
-particles = [p1,p2,p3]
+particles = [p1,p2,p3,p4,p5,p6,p7,p8]
 maxTime = 10
 force = []
+test2 =[]
 
 #Force Calculation
 """
 This calculates the force. The vector "p.separation" is the separation vector and the scalar "r" is the magnitude of s. The output of this function is a force vector.
 "r" and "p.separation" need to be updated accordingly to the methods from the particle 3D file.
 """
-savedStuff = open("JAMIE.txt", "w")
+savedStuff = open("JAMIE.xyz", "w")
 
 
 def force(r,s):
@@ -74,10 +80,25 @@ def updatePos(p,f,dt,t):
 while t < maxTime:
     oldForce = totalForce(particles)
     for i in range(len(particles)):
+        particles[i].position = boundary(particles[i])
+        moreStuff = (str(particles[i].label) + " " + str(particles[i].position[0]) + " " + str(particles[i].position[1]) + " " + str(particles[i].position[2]))
+        test2.append(moreStuff)
         particles[i].position = updatePos(particles[i],oldForce[i],dt,t)
-        savedStuff.write(str(particles[i].position) + "\n")
     newForce = totalForce(particles)
     for i in range(len(particles)):
         particles[i].velocity = particles[i].leapVelocity(dt, 0.5*(oldForce[i]+newForce[i]))
     oldForce = newForce   
     t = t+dt
+
+i=0.0
+k=0
+testList=[]
+for item in test2:
+    i = i+1
+    newTest = str(item)[0:-1]
+    testList.append(newTest)
+    if (i % float(len(particles))) == 0:
+        k=k+1
+        otherStuff = ("\n".join(testList))
+        savedStuff.write(str(len(particles)) + "\n" + "Point = " + str(k) + "\n" + str(otherStuff) + "\n")
+        testList = []
