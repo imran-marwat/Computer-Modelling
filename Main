@@ -4,29 +4,40 @@ import numpy as np
 from Particle3D import Particle3D
 import math
 import sys
+import MDUtilities as MD
 
-p1 = Particle3D(np.array([float(8.0), float(2.0), float(0.0)]),0,1,1)
-p2 = Particle3D(np.array([float(-3.0), float(7.0), float(0.0)]),0,1,2)
-p3 = Particle3D(np.array([float(4.0), float(3.0), float(0.0)]),0,1,3)
-p4 = Particle3D(np.array([float(-1.0), float(-1.0), float(0.0)]),0,1,3)
-p5 = Particle3D(np.array([float(5.0), float(3.0), float(0.0)]),0,1,1)
-p6 = Particle3D(np.array([float(-4.0), float(2.0), float(0.0)]),0,1,2)
-p7 = Particle3D(np.array([float(2.0), float(2.5), float(-0.0)]),0,1,3)
-p8 = Particle3D(np.array([float(-2.0), float(1.0), float(0.0)]),0,1,"Hello")
+"""
+Sets initial conditions of the particles
+Sets initial time and timestep
+Creates lists for the force on each particle and the position of each particle
+"""
+
+particles = []
+numPart = 32
+for i in range(numPart):
+    particles.append(Particle3D(0.0,0.0,1,i+1))
+
+
 t = 0.0
-dt = 0.01
-particles = [p1,p2,p3,p4,p5,p6,p7,p8]
-maxTime = 10
+dt = 0.0001
+maxTime = 0.1
 force = []
-test2 =[]
+position_info =[]
 
-#Force Calculation
-"""
-This calculates the force. The vector "p.separation" is the separation vector and the scalar "r" is the magnitude of s. The output of this function is a force vector.
-"r" and "p.separation" need to be updated accordingly to the methods from the particle 3D file.
-"""
-savedStuff = open("JAMIE.xyz", "w")
+box = MD.setInitialPositions(1, particles)
+MD.setInitialVelocities(0.1, particles)
+print(box)
+boxLen = box[0]
 
+
+"""
+Calculates force between two particles.
+The seperation vector (s) and distance (r) are inputted
+Calculates force using the Leonard-Jones Potential
+Impliments the minimum image convention by providing a cut-off point so a particle doesn't interact with another particles image
+The force between the particles is returned.
+"""
+final_list=open("JAMIE.xyz", "w")
 
 def force(r,s):
     if r>=3.0:
@@ -34,6 +45,14 @@ def force(r,s):
     else:
         force = ((48/(r**14))-(24/(r**8)))*s
     return force
+    
+"""
+Calculates Total Force on Each Particle
+The particle is inputted
+This function calculates the force on each particle in the system. It intakes the particles information, calculates the contribution from each other particle and sums the contributions together.
+This is repeated for each particle and the force on each particle is added to the list
+Returns the list of forces on each particle
+"""
 
 def totalForce(p):
     f=[]
@@ -55,50 +74,64 @@ def totalForce(p):
         f=[]
         k=0
     return f2
-
+    
 
 """
-Must calculate position, then boundary conditions, then other variables
+This function establishes the boundary conditions. Periodic boundary conditions 
+are imposed separately on the x, y and z components of a particle's position. 
+If a particles position in any dimension is greater than 5 or less than -5, a new position is given to it
 """
-#Boundary Conditions
 def boundary(p):
     for i in range(3):
         pos = p.position[i]
-        if pos>5.0:
-            p.position[i] = pos - 10.0
-        elif pos<-5.0:
-            p.position[i] = pos + 10.0
+        if pos>(boxLen/2):
+            p.position[i] = (pos % (boxLen/2)) - (boxLen/2)
+        elif pos<-(boxLen/2):
+            p.position[i] = (pos % (boxLen/2)) + (boxLen/2)
     return p.position
 
-
+"""
+The update function uses the boundary function to impose boundary conditions on a particle's position.
+The position is then updated using the leapPos method from Particle3D.
+Boundary conditions are again applied to the updated position
+"""
 def updatePos(p,f,dt,t):
     p.position = boundary(p)
     p.position = p.leapPos(dt,f)
     p.position = boundary(p)
     return p.position
+    
+
+"""
+Main Code
+"""
+
+#Uses the velocity verlet method to update position, velocity and force. Outpouts positions to a .xyz file
 
 while t < maxTime:
     oldForce = totalForce(particles)
     for i in range(len(particles)):
         particles[i].position = boundary(particles[i])
-        moreStuff = (str(particles[i].label) + " " + str(particles[i].position[0]) + " " + str(particles[i].position[1]) + " " + str(particles[i].position[2]))
-        test2.append(moreStuff)
+        iposition_info = (str(particles[i].label) + " " + str(particles[i].position[0]) + " " + str(particles[i].position[1]) + " " + str(particles[i].position[2]))
+        position_info.append(iposition_info)
         particles[i].position = updatePos(particles[i],oldForce[i],dt,t)
     newForce = totalForce(particles)
     for i in range(len(particles)):
         particles[i].velocity = particles[i].leapVelocity(dt, 0.5*(oldForce[i]+newForce[i]))
     oldForce = newForce   
     t = t+dt
+    
+# Formats the .xyz so it can be read by vmd
 
 i=0.0
 k=0
-testList=[]
-for item in test2:
+temp_list=[]
+for item in position_info:
     i = i+1
-    newTest = str(item)[0:-1]
-    testList.append(newTest)
+    deleted_brackets = str(item)[0:-1]
+    temp_list.append(deleted_brackets)
     if (i % float(len(particles))) == 0:
         k=k+1
-        otherStuff = ("\n".join(testList))
-        savedStuff.write(str(len(particles)) + "\n" + "Point = " + str(k) + "\n" + str(otherStuff) + "\n")
-        testList = []
+        joined_list = ("\n".join(temp_list))
+        final_list.write(str(len(particles)) + "\n" + "Point = " + str(k) + "\n" + str(joined_list) + "\n")
+        temp_list = []
