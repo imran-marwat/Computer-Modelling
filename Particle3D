@@ -30,10 +30,10 @@ class Particle3D(object):
             pos1 = p1.position[i]
             distance = p1.position[i] - p2.position[i]
             if distance>(boxLen/2):
-                pos1 = (pos1 % (boxLen/2)) - (boxLen/2)
+                pos1 = (pos1 % (boxLen))-boxLen
                 separation[i] = pos1-p2.position[i]
             elif distance<-(boxLen/2):
-                pos1 = (pos1 % (boxLen/2)) + (boxLen/2)
+                pos1 = (pos1 % (boxLen)) + (boxLen)
                 separation[i] = pos1-p2.position[i]
             else:
                 separation[i] = distance
