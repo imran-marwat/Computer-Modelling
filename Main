@@ -1,3 +1,4 @@
+
 #Main
 
 import numpy as np
@@ -13,20 +14,19 @@ Creates lists for the force on each particle and the position of each particle
 """
 
 particles = []
-numPart = 32
+numPart = 4
 for i in range(numPart):
     particles.append(Particle3D(0.0,0.0,1,i+1))
 
 
 t = 0.0
-dt = 0.0001
-maxTime = 0.1
+dt = 0.01
+maxTime = 10
 force = []
 position_info =[]
 
 box = MD.setInitialPositions(1, particles)
 MD.setInitialVelocities(0.1, particles)
-print(box)
 boxLen = box[0]
 
 
@@ -66,7 +66,7 @@ def totalForce(p):
             if i == k:
                 k = k+1
             else:
-                s = Particle3D.separation(p[i],p[k])
+                s = Particle3D.separation(p[i],p[k],boxLen)
                 r = np.linalg.norm(s)
                 f.append(force(r,s))
                 k = k+1
@@ -88,7 +88,6 @@ def boundary(p):
             p.position[i] = (pos % (boxLen/2)) - (boxLen/2)
         elif pos<-(boxLen/2):
             p.position[i] = (pos % (boxLen/2)) + (boxLen/2)
-    return p.position
 
 """
 The update function uses the boundary function to impose boundary conditions on a particle's position.
@@ -96,10 +95,9 @@ The position is then updated using the leapPos method from Particle3D.
 Boundary conditions are again applied to the updated position
 """
 def updatePos(p,f,dt,t):
-    p.position = boundary(p)
-    p.position = p.leapPos(dt,f)
-    p.position = boundary(p)
-    return p.position
+    boundary(p)
+    p.leapPos(dt,f)
+    boundary(p)
     
 
 """
@@ -111,13 +109,13 @@ Main Code
 while t < maxTime:
     oldForce = totalForce(particles)
     for i in range(len(particles)):
-        particles[i].position = boundary(particles[i])
+        boundary(particles[i])
         iposition_info = (str(particles[i].label) + " " + str(particles[i].position[0]) + " " + str(particles[i].position[1]) + " " + str(particles[i].position[2]))
         position_info.append(iposition_info)
-        particles[i].position = updatePos(particles[i],oldForce[i],dt,t)
+        updatePos(particles[i],oldForce[i],dt,t)
     newForce = totalForce(particles)
     for i in range(len(particles)):
-        particles[i].velocity = particles[i].leapVelocity(dt, 0.5*(oldForce[i]+newForce[i]))
+        particles[i].leapVelocity(dt, 0.5*(oldForce[i]+newForce[i]))
     oldForce = newForce   
     t = t+dt
     
