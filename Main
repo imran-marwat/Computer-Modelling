@@ -1,8 +1,7 @@
-
 #Main
 
 import numpy as np
-from Particle3D import Particle3D
+from NewParticle3D import Particle3D
 import math
 import sys
 import MDUtilities as MD
@@ -13,15 +12,28 @@ Sets initial time and timestep
 Creates lists for the force on each particle and the position of each particle
 """
 
-sigma = 3.405*(10**-10)
-rho = 0.1
-temp = 5
+filein = open("InputParam.txt","r")
+SimParams = []
+for line in filein.readlines():
+    tokens = line.split("=")
+    SimParams.append(float(tokens[1]))
+filein.close()
+
+numPart = int(SimParams[0])
+NumSteps = int(SimParams[1])
+dt =  SimParams[2]
+temp =  SimParams[3]
+rho =  SimParams[4]
+CutOff =  SimParams[5]
+sigma = SimParams[6]
+
+print(str(sigma))
+
+
 t = 0.0
-dt = 0.01
-maxTime = 10
+maxTime = dt*NumSteps
 
 particles = []
-numPart = 108
 for i in range(numPart):
     particles.append(Particle3D(0.0,0.0,1,i+1))
 
