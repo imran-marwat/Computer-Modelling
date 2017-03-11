@@ -13,20 +13,24 @@ Sets initial time and timestep
 Creates lists for the force on each particle and the position of each particle
 """
 
+sigma = 3.405*(10**-10)
+rho = 0.1
+temp = 5
+t = 0.0
+dt = 0.01
+maxTime = 10
+
 particles = []
-numPart = 4
+numPart = 108
 for i in range(numPart):
     particles.append(Particle3D(0.0,0.0,1,i+1))
 
 
-t = 0.0
-dt = 0.01
-maxTime = 10
 force = []
 position_info =[]
 
-box = MD.setInitialPositions(1, particles)
-MD.setInitialVelocities(0.1, particles)
+box = MD.setInitialPositions(rho, particles)
+MD.setInitialVelocities(temp, particles)
 boxLen = box[0]
 
 
@@ -43,7 +47,7 @@ def force(r,s):
     if r>=3.0:
         force = 0.0
     else:
-        force = ((48/(r**14))-(24/(r**8)))*s
+        force = ((48.0/(r**14))-(24.0/(r**8)))*s
     return force
     
 """
@@ -58,8 +62,8 @@ def totalForce(p):
     f=[]
     k=0
     f2=[]
-    s=[]
-    r=[]
+    s=0
+    r=0
 
     for i in range(len(p)):
         while k<=(len(p)-1):
@@ -84,10 +88,10 @@ If a particles position in any dimension is greater than 5 or less than -5, a ne
 def boundary(p):
     for i in range(3):
         pos = p.position[i]
-        if pos>(boxLen/2):
-            p.position[i] = (pos % (boxLen/2)) - (boxLen/2)
-        elif pos<-(boxLen/2):
-            p.position[i] = (pos % (boxLen/2)) + (boxLen/2)
+        if pos>(boxLen):
+            p.position[i] = (pos % (boxLen))
+        elif pos<0:
+            p.position[i] = (pos % (boxLen))+boxLen
 
 """
 The update function uses the boundary function to impose boundary conditions on a particle's position.
@@ -107,17 +111,17 @@ Main Code
 #Uses the velocity verlet method to update position, velocity and force. Outpouts positions to a .xyz file
 
 while t < maxTime:
-    oldForce = totalForce(particles)
-    for i in range(len(particles)):
-        boundary(particles[i])
-        iposition_info = (str(particles[i].label) + " " + str(particles[i].position[0]) + " " + str(particles[i].position[1]) + " " + str(particles[i].position[2]))
-        position_info.append(iposition_info)
-        updatePos(particles[i],oldForce[i],dt,t)
-    newForce = totalForce(particles)
-    for i in range(len(particles)):
-        particles[i].leapVelocity(dt, 0.5*(oldForce[i]+newForce[i]))
-    oldForce = newForce   
-    t = t+dt
+	oldForce = totalForce(particles)
+	for i in range(len(particles)):
+		boundary(particles[i])
+		iposition_info = (str(particles[i].label) + " " + str(particles[i].position[0]) + " " + str(particles[i].position[1]) + " " + str(particles[i].position[2]))
+		position_info.append(iposition_info)
+		updatePos(particles[i],oldForce[i],dt,t)
+	newForce = totalForce(particles)
+	for i in range(len(particles)):
+		particles[i].leapVelocity(dt, 0.5*(oldForce[i]+newForce[i]))
+	oldForce = newForce   
+	t = t+dt
     
 # Formats the .xyz so it can be read by vmd
 
