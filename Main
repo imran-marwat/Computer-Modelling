@@ -1,7 +1,7 @@
 #Main
 
 import numpy as np
-from NewParticle3D import Particle3D
+from Particle3D import Particle3D
 import math
 import sys
 import MDUtilities as MD
