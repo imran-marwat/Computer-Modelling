@@ -16,27 +16,26 @@ class Particle3D(object):
     # Time integration methods. First-order velocity update
     def leapVelocity(self, dt, force):
         self.velocity = self.velocity + dt*(force/self.mass)
-        return(self.velocity)
 
     # Second-order position update
     def leapPos(self, dt, force):
         self.position = self.position + dt*self.velocity + 0.5*dt**2*force/self.mass
-        return(self.position)
+
 
     # Static Method returning relative vector separation of two particles
     @staticmethod
-    def separation(p1,p2):
+    def separation(p1,p2, boxLen):
         separation = np.array([0.0,0.0,0.0])
         for i in range(3):
+            pos1 = p1.position[i]
             distance = p1.position[i] - p2.position[i]
-            if distance>5.0:
-                pos1 = p1.position[i]
-                pos1 = pos1 - 10.0
-                separation[i] = p2.position[i]-pos1
-            elif distance<-5.0:
-                pos1 = p1.position[i]
-                pos1 = pos1 + 10.0
-                separation[i] = p2.position[i]-pos1
+            if distance>(boxLen/2):
+                pos1 = (pos1 % (boxLen))-boxLen
+                separation[i] = pos1-p2.position[i]
+            elif distance<-(boxLen/2):
+                pos1 = (pos1 % (boxLen)) + (boxLen)
+                separation[i] = pos1-p2.position[i]
             else:
                 separation[i] = distance
         return separation
+    
