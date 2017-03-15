@@ -157,6 +157,12 @@ If CalculateEnergy == 1.0:
 
 #Uses the velocity verlet method to update position, velocity and force. Outpouts positions to a .xyz file
 
+SDTemp = []
+SDContain = []
+time_last_saved = 0
+T = dt*5
+l = 0
+
 while t < maxTime:
 	oldForce, PE, KE = totalForce(particles)
 	time.append(t)
@@ -170,12 +176,26 @@ while t < maxTime:
 		iposition_info = (str(particles[i].label) + " " + str(particles[i].position[0]) + " " + str(particles[i].position[1]) + " " + str(particles[i].position[2]))
 		position_info.append(iposition_info)
 		updatePos(particles[i],oldForce[i],dt,t)
+		 R = np.linalg.norm(particles[i].position)
+                SDTemp.append(R)
+            
+        if l%5== 0:
+            SDContain.append(SDTemp)
+            SDTemp = []
+        else:
+            SDTemp = []
+
 	newForce,PE,KE = totalForce(particles)
 	for i in range(len(particles)):
 		particles[i].leapVelocity(dt, 0.5*(oldForce[i]+newForce[i]))
 	oldForce = newForce   
 	t = t+dt
+	l = l+1
     
+
+#Calls MSD_Calculator method from Particle 3D
+Particle3D.MSD_Calculator(particles, SDContain)
+
 # Formats the .xyz so it can be read by vmd
 
 i=0.0
