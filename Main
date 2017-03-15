@@ -85,20 +85,32 @@ def totalForce(p):
     f2=[]
     s=0
     r=0
-
+    PE_1Int =[]
+    PE_1Particle = []
+    KE_1Particle = []
+    
     for i in range(len(p)):
+    	KinEnergy = Particle3D.KinEnergy(p[i])
+        KE_1Particle.append(KinEnergy)
         while k<=(len(p)-1):
             if i == k:
                 k = k+1
             else:
                 s = Particle3D.separation(p[i],p[k],boxLen)
                 r = np.linalg.norm(s)
+		PotEnergy1Int = Particle3D.PotEnergy(p[i],p[k],r)
+                PE_1Int.append(PotEnergy1Int)
                 f.append(force(r,s))
                 k = k+1
         f2.append(sum(f))
+	PotEnergy1Particle = sum(PE_1Int)
+        PE_1Particle.append(PotEnergy1Particle)
+        PE_1Int = []
         f=[]
         k=0
-    return f2
+    PE_Total = sum(PE_1Particle)
+    KE_Total = sum(KE_1Particle)
+    return f2, PE_Total, KE_Total
     
 
 """
@@ -129,16 +141,26 @@ def updatePos(p,f,dt,t):
 Main Code
 """
 
+time = []
+Total_PE = []
+Total_KE = []
+Total_E = []
+
 #Uses the velocity verlet method to update position, velocity and force. Outpouts positions to a .xyz file
 
 while t < maxTime:
-	oldForce = totalForce(particles)
+	oldForce, PE, KE = totalForce(particles)
+	time.append(t)
+        Total_PE.append(PE)
+        Total_KE.append(KE)
+        E = PE + KE
+        Total_E.append(E)
 	for i in range(len(particles)):
 		boundary(particles[i])
 		iposition_info = (str(particles[i].label) + " " + str(particles[i].position[0]) + " " + str(particles[i].position[1]) + " " + str(particles[i].position[2]))
 		position_info.append(iposition_info)
 		updatePos(particles[i],oldForce[i],dt,t)
-	newForce = totalForce(particles)
+	newForce,PE,KE = totalForce(particles)
 	for i in range(len(particles)):
 		particles[i].leapVelocity(dt, 0.5*(oldForce[i]+newForce[i]))
 	oldForce = newForce   
@@ -158,3 +180,13 @@ for item in position_info:
         joined_list = ("\n".join(temp_list))
         final_list.write(str(len(particles)) + "\n" + "Point = " + str(k) + "\n" + str(joined_list) + "\n")
         temp_list = []
+	
+plt.plot(time,Total_PE)
+plt.show()
+
+plt.plot(time,Total_KE)
+plt.show()
+
+plt.plot(time,Total_E)
+plt.show()
+
