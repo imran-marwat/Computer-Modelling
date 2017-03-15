@@ -1,7 +1,5 @@
 #Main
 
-#Main
-
 import numpy as np
 from NewParticle3D import Particle3D
 import math
@@ -15,12 +13,21 @@ Creates lists for the force on each particle and the position of each particle
 """
 
 
-filein = open("InputParam.txt","r")
+if len(sys.argv)!=3:
+    print "Wrong number of arguments"
+    print "Usage: " +sys.argv[0] + " <input file>  <output file>"
+    quit()
+else:
+    infileName = sys.argv[1]
+    outfileName = sys.argv[2]
+
+fileIn = open(infileName, "r")
+
 SimParams = []
-for line in filein.readlines():
+for line in fileIn.readlines():
     tokens = line.split("=")
     SimParams.append(float(tokens[1]))
-filein.close()
+fileIn.close()
 
 numPart = int(SimParams[0])
 NumSteps = int(SimParams[1])
@@ -29,8 +36,6 @@ temp =  SimParams[3]
 rho =  SimParams[4]
 CutOff =  SimParams[5]
 sigma = SimParams[6]
-
-print(str(sigma))
 
 
 t = 0.0
@@ -57,7 +62,7 @@ Calculates force using the Leonard-Jones Potential
 Impliments the minimum image convention by providing a cut-off point so a particle doesn't interact with another particles image
 The force between the particles is returned.
 """
-final_list=open("JAMIE.xyz", "w")
+final_list=open(outfilename, "w")
 
 def force(r,s):
     if r>=3.0:
