@@ -39,3 +39,28 @@ class Particle3D(object):
                 separation[i] = distance
         return separation
     
+    # Static Method that calculates the Mean Squared Displacement of all the particles in the box
+    @staticmethod
+    def MSDcalculator(particles, dt, maxTime):
+        t=0
+        SDTemp = []
+        SDContain = []
+        for i in range (len(particles)):
+            time_last_saved= 0
+            T = dt*5
+            while t < maxTime:
+                if t>time_last_saved + T:
+                    time_last_saved = t
+                    SD = np.linalg.norm(particles[i].position)
+                    SDTemp.append(SD)
+                t = t+dt
+            SDContain.append(SDTemp)
+            SDTemp = []
+            t = 0
+        a = np.array(SDContain)
+        a.sum(axis=0)
+        print(a)
+
+    
+
+    
