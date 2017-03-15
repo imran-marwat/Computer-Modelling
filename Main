@@ -192,11 +192,20 @@ for item in position_info:
         temp_list = []
 	
 if ShowPlotEnergy == 1.0:
-	plt.plot(time,Total_PE)
-	plt.show()
+    plt.plot(time,Total_PE)
+    plt.title("Total Potential Energy vs. Time")
+    plt.xlabel("Time")
+    plt.ylabel("Total Potential Energy")
+    plt.show()
 
-	plt.plot(time,Total_KE)
-	plt.show()
+    plt.plot(time,Total_KE)
+    plt.title("Total Kinetic Energy vs. Time")
+    plt.xlabel("Time")
+    plt.ylabel("Total Kinetic Energy")
+    plt.show()
 
-	plt.plot(time,Total_E)
-	plt.show()
+    plt.plot(time,Total_E)
+    plt.title("Total Energy vs. Time")
+    plt.xlabel("Time")
+    plt.ylabel("Total Energy")
+    plt.show()
