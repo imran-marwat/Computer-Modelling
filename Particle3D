@@ -67,10 +67,7 @@ class Particle3D(object):
         a.sum(axis=0)
         print(a)
         
+    @staticmethod
     def PotEnergy(r):
         PotEnergy = (2/(r**12))-(2/(r**6))
         return PotEnergy
-
-    
-
-    
