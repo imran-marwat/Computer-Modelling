@@ -20,6 +20,12 @@ class Particle3D(object):
     # Second-order position update
     def leapPos(self, dt, force):
         self.position = self.position + dt*self.velocity + 0.5*dt**2*force/self.mass
+    
+    #Calculates Kinetic Energy of Particle
+    def KinEnergy(self):
+        v = np.linalg.norm(self.velocity)
+        KinEnergy = 0.5*self.mass*(v**2)
+        return KinEnergy
 
 
     # Static Method returning relative vector separation of two particles
@@ -60,6 +66,10 @@ class Particle3D(object):
         a = np.array(SDContain)
         a.sum(axis=0)
         print(a)
+        
+    def PotEnergy(r):
+        PotEnergy = (2/(r**12))-(2/(r**6))
+        return PotEnergy
 
     
 
