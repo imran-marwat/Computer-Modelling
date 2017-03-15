@@ -1,5 +1,7 @@
 #Main
 
+#Main
+
 import numpy as np
 from NewParticle3D import Particle3D
 import math
@@ -11,6 +13,7 @@ Sets initial conditions of the particles
 Sets initial time and timestep
 Creates lists for the force on each particle and the position of each particle
 """
+
 
 filein = open("InputParam.txt","r")
 SimParams = []
@@ -34,6 +37,7 @@ t = 0.0
 maxTime = dt*NumSteps
 
 particles = []
+
 for i in range(numPart):
     particles.append(Particle3D(0.0,0.0,1,i+1))
 
