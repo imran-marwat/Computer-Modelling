@@ -21,21 +21,46 @@ class Particle3D(object):
     def leapPos(self, dt, force):
         self.position = self.position + dt*self.velocity + 0.5*dt**2*force/self.mass
 
+
     # Static Method returning relative vector separation of two particles
     @staticmethod
-    def separation(p1,p2):
+    def separation(p1,p2, boxLen):
         separation = np.array([0.0,0.0,0.0])
-        for i in range(2):
+        for i in range(3):
+            pos1 = p1.position[i]
             distance = p1.position[i] - p2.position[i]
-            if distance>5.0:
-                pos1 = p1.position[i]
-                pos1 = pos1 - 10.0
-                separation[i] = p2.position[i]-pos1
-            elif distance<-5.0:
-                pos1 = p1.position[i]
-                pos1 = pos1 + 10.0
-                separation[i] = p2.position[i]-pos1
+            if distance>(boxLen/2):
+                pos1 = (pos1 % (boxLen))-boxLen
+                separation[i] = pos1-p2.position[i]
+            elif distance<-(boxLen/2):
+                pos1 = (pos1 % (boxLen)) + (boxLen)
+                separation[i] = pos1-p2.position[i]
             else:
                 separation[i] = distance
         return separation
+    
+    # Static Method that calculates the Mean Squared Displacement of all the particles in the box
+    @staticmethod
+    def MSDcalculator(particles, dt, maxTime):
+        t=0
+        SDTemp = []
+        SDContain = []
+        for i in range (len(particles)):
+            time_last_saved= 0
+            T = dt*5
+            while t < maxTime:
+                if t>time_last_saved + T:
+                    time_last_saved = t
+                    SD = np.linalg.norm(particles[i].position)
+                    SDTemp.append(SD)
+                t = t+dt
+            SDContain.append(SDTemp)
+            SDTemp = []
+            t = 0
+        a = np.array(SDContain)
+        a.sum(axis=0)
+        print(a)
+
+    
+
     
