@@ -98,7 +98,7 @@ def totalForce(p):
             else:
                 s = Particle3D.separation(p[i],p[k],boxLen)
                 r = np.linalg.norm(s)
-		PotEnergy1Int = Particle3D.PotEnergy(p[i],p[k],r)
+		PotEnergy1Int = Particle3D.PotEnergy(r)
                 PE_1Int.append(PotEnergy1Int)
                 f.append(force(r,s))
                 k = k+1
