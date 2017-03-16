@@ -176,8 +176,8 @@ while t < maxTime:
 		iposition_info = (str(particles[i].label) + " " + str(particles[i].position[0]) + " " + str(particles[i].position[1]) + " " + str(particles[i].position[2]))
 		position_info.append(iposition_info)
 		updatePos(particles[i],oldForce[i],dt,t)
-		 R = np.linalg.norm(particles[i].position)
-                SDTemp.append(R)
+		 R^2 = (np.linalg.norm(particles[i].position))**2
+                SDTemp.append(R^2)
             
         if l%5== 0:
             SDContain.append(SDTemp)
