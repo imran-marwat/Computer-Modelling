@@ -155,13 +155,16 @@ If CalculateEnergy == 1.0:
 	Total_KE = []
 	Total_E = []
 
-#Uses the velocity verlet method to update position, velocity and force. Outpouts positions to a .xyz file
+#Uses the velocity verlet method to update position, velocity and force. Outputs positions to a .xyz file
 
 SDTemp = []
 SDContain = []
 time_last_saved = 0
 T = dt*5
 l = 0
+MSD_Time_List = []
+MSD_Time = 0
+
 
 while t < maxTime:
 	oldForce, PE, KE = totalForce(particles)
@@ -191,6 +194,8 @@ while t < maxTime:
 	oldForce = newForce   
 	t = t+dt
 	l = l+1
+	MSD_Time = MSD_Time + T
+	MSD_Time_List.append(MSD_Time)
     
 
 #Calls MSD_Calculator method from Particle 3D
