@@ -73,3 +73,4 @@ class Particle3D(object):
     def PotEnergy(r):
         PotEnergy = (2/(r**12))-(2/(r**6))
         return PotEnergy
+
